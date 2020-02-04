@@ -1,0 +1,28 @@
+{
+  "name": "data-htm-to-mysql",
+  "version": "1.0.0",
+  "description": "",
+  "main": "config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/paulobusch/data-htm-to-mysql.git"
+  },
+  "author": "paulo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/paulobusch/data-htm-to-mysql/issues"
+  },
+  "homepage": "https://github.com/paulobusch/data-htm-to-mysql#readme",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.3",
+    "cheerio-tableparser": "^1.0.1",
+    "exceljs": "^3.7.0",
+    "fast-xml-parser": "^3.16.0",
+    "sync-mysql": "^3.0.1",
+    "table-scraper": "^0.1.0",
+    "xml2js": "^0.4.23"
+  }
+}
