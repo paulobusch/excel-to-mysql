@@ -96,7 +96,7 @@ const async = async () => {
         const file = files[index];
 
         console.log('');
-        console.log('====================================================');
+        console.log('===========================');
         console.log('Importando: ' + file);
         const data = await Excel.load(file, Customers);
         if (!data || !data.worksheet || !data.columns) {
@@ -216,7 +216,7 @@ const async = async () => {
         let partial = 0;
         while (partial * Config.limit < imports.length) {
             const offset = partial * Config.limit;
-            console.log('Processado: ' + (offset + Config.limit) + ' / ' + imports.length);
+            console.log('Processando: ' + (offset + Config.limit) + ' / ' + imports.length);
             const partialImport = imports.slice(offset, offset + Config.limit);
 
             const addressRows = [];
