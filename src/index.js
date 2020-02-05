@@ -283,7 +283,7 @@ const async = async () => {
                     TaskRows.push([
                         task.id,
                         task.date,
-                        task.description,
+                        task.description ? task.description : '[Importado]',
                         task.status,
                         task.id_customer,
                         task.id_create_user,
@@ -300,7 +300,7 @@ const async = async () => {
                         accompaniment.description
                             ? accompaniment.description.slice(0, 15) + '...'
                             : '[Título]',
-                        accompaniment.description,
+                        accompaniment.description ? accompaniment.description : '[Importado]',
                         accompaniment.id_customer,
                         accompaniment.id_create_user,
                         accompaniment.id_update_user,
