@@ -8,11 +8,12 @@ const { MySqlConfig } = require('../config');
 
 const mysql = require('sync-mysql');
 const fs = require('fs');
+const _ = require('lodash');
 
 const async = async () => {
     console.log('Iniciando...');
     const connection = new mysql(MySqlConfig);
-    const queryUsers = "select id, upper(name) from users where removed=0";
+    const queryUsers = "select id, upper(name) as name from users where removed=0";
     const users = await connection.query(queryUsers);
     const getUser = (userStr) => {
         if (!userStr) return null;
@@ -22,7 +23,7 @@ const async = async () => {
         return user.id;
     };
 
-    const queryPriorities = "select id, upper(name) from customers_priorities";
+    const queryPriorities = "select id, upper(name) as name from customers_priorities";
     const priorities = await connection.query(queryPriorities);
     const getPriority = (priorityStr) => {
         if (!priorityStr) return null;
@@ -32,7 +33,7 @@ const async = async () => {
         return priority.id;
     };
 
-    const queryStatus = "select id, upper(name) from tasks_status";
+    const queryStatus = "select id, upper(name) as name from tasks_status";
     const status = await connection.query(queryStatus);
     const getStatus = (statusStr) => {
         if (!statusStr) return null;
@@ -42,7 +43,7 @@ const async = async () => {
         return stat.id;
     };
 
-    const queryLists = "select id, upper(name) from customer_lists where removed=0";
+    const queryLists = "select id, upper(name) as name from customer_lists where removed=0";
     const lists = await connection.query(queryLists);
     const getList = (listStr) => {
         if (!listStr) return null;
@@ -54,6 +55,7 @@ const async = async () => {
 
     const queryStates = "select id, upper(code) as uf from states";
     const states = await connection.query(queryStates);
+    _.forEach(states, s => s.uf = _.deburr(s.uf.toUpperCase()));
     const getState = (ufStr) => {
         if (!ufStr) return null;
         const ufName = _.deburr(ufStr.toUpperCase());
@@ -62,8 +64,9 @@ const async = async () => {
         return state.id;
     };
 
-    const queryCities = "select id, upper(name), id_state from cities";
+    const queryCities = "select id, upper(name) as name, id_state from cities";
     const cities = await connection.query(queryCities);
+    _.forEach(cities, c => c.name = _.deburr(c.name.toUpperCase()));
     const getCity = (stateId, cityStr) => {
         if (!stateId || !cityStr) return null;
         const cityName = _.deburr(cityStr.toUpperCase());
@@ -117,7 +120,7 @@ const async = async () => {
                 continue;
 
             if (hasCustomer) {
-                const state = getState(lineRows['UF']);
+                const state = getState(lineRows['UF_ESTADO']);
                 const city = getCity(state, lineRows['CIDADE']);
                 const address = {
                     id: NewId(),
@@ -126,10 +129,6 @@ const async = async () => {
                 };
 
                 const cpf_cnpj = lineRows['CPFOUCNPJ'] || '';
-
-                if (getDate(lineRows['NASC']) == 'Invalid Date')
-                    console.log(lineRows['NASC']);
-
                 const customer = new Customer(
                     NewId(),
                     lineRows['NOME'],
@@ -261,7 +260,9 @@ const async = async () => {
                     customer.id_priority,
                     customer.id_list,
                     customer.id_creation_user,
-                    customer.id_update_user
+                    customer.id_update_user,
+                    new Date(),
+                    new Date()
                 ]);
                 ProgressRows.push([
                     progress.id,

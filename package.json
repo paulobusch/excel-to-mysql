@@ -21,6 +21,7 @@
     "cheerio-tableparser": "^1.0.1",
     "exceljs": "^3.7.0",
     "fast-xml-parser": "^3.16.0",
+    "lodash": "^4.17.15",
     "sync-mysql": "^3.0.1",
     "table-scraper": "^0.1.0",
     "xml2js": "^0.4.23"
