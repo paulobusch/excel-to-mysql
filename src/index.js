@@ -1,5 +1,5 @@
 const { Customer } = require('./models/customer');
-const { Config, Scripts, ExcelConfig } = require('../config');
+const { Config, Columns, ExcelConfig } = require('../config');
 const { Customers } = require('./utils/mapping-import');
 const { Query } = require('./utils/query');
 const { NewId } = require('./utils/random');
@@ -23,17 +23,17 @@ const async = async () => {
         return user.id;
     };
 
-    const queryPriorities = "select id, upper(name) as name from customers_priorities";
-    const priorities = await connection.query(queryPriorities);
-    const getPriority = (priorityStr) => {
-        if (!priorityStr) return null;
-        const priorityName = priorityStr.toUpperCase();
-        const priority = priorities.find(f => f.name === priorityName);
-        if (!priority) return null;
-        return priority.id;
+    const queryCompanies = "select id, upper(name) as name from companies";
+    const companies = await connection.query(queryCompanies);
+    const getCompany = (companyStr) => {
+        if (!statusStr) return null;
+        const comapanyName = companyStr.toUpperCase();
+        const company = companies.find(c => c.name === comapanyName);
+        if (!company) return null;
+        return company.id;
     };
 
-    const queryStatus = "select id, upper(name) as name from tasks_status";
+    const queryStatus = "select id, upper(name) as name from dirf_status";
     const status = await connection.query(queryStatus);
     const getStatus = (statusStr) => {
         if (!statusStr) return null;
@@ -41,16 +41,6 @@ const async = async () => {
         const stat = status.find(f => f.name === statusName);
         if (!stat) return null;
         return stat.id;
-    };
-
-    const queryLists = "select id, upper(name) as name from customer_lists where removed=0";
-    const lists = await connection.query(queryLists);
-    const getList = (listStr) => {
-        if (!listStr) return null;
-        const listName = listStr.toUpperCase();
-        const list = lists.find(l => l.name === listName);
-        if (!list) return null;
-        return list.id;
     };
 
     const queryStates = "select id, upper(code) as uf from states";
@@ -62,17 +52,6 @@ const async = async () => {
         const state = states.find(f => f.uf === ufName);
         if (!state) return null;
         return state.id;
-    };
-
-    const queryCities = "select id, upper(name) as name, id_state from cities";
-    const cities = await connection.query(queryCities);
-    _.forEach(cities, c => c.name = _.deburr(c.name.toUpperCase()));
-    const getCity = (stateId, cityStr) => {
-        if (!stateId || !cityStr) return null;
-        const cityName = _.deburr(cityStr.toUpperCase());
-        const city = cities.find(f => f.id_state === stateId && f.name === cityName);
-        if (!city) return null;
-        return city.id;
     };
 
     const getDate = (date) => {
@@ -113,19 +92,27 @@ const async = async () => {
             const lineRows = Excel.readLine(data.worksheet, data.columns, r);
 
             const hasCustomer = !!lineRows['NOME'];
-            const hasAccompaniment = !!lineRows['CLIENTES_ACOMPANHAMENTOS::DATA'];
-            const hasTask = !!lineRows['CLIENTES_TAREFAS::DATA'];
+            const hasAction = !!lineRows['EO']
+                || !!lineRows['EP']
+                || !!lineRows['ON']
+                || !!lineRows['PN']
+                || !!lineRows['PA']
+                || !!lineRows['PB']
+                || !!lineRows['ACAOOR'];
 
             if (!hasCustomer && !hasAccompaniment && !hasTask)
                 continue;
 
             if (hasCustomer) {
                 const state = getState(lineRows['UF_ESTADO']);
-                const city = getCity(state, lineRows['CIDADE']);
                 const address = {
                     id: NewId(),
                     id_state: state,
-                    id_city: city,
+                    cep: lineRows['CEP'],
+                    public_place: lineRows['LOGRADOURO'],
+                    number: lineRows['NUMERO'],
+                    complement: lineRows['COMPLEMENTO'],
+                    neighborhood: lineRows['BAIRRO']
                 };
 
                 const cpf_cnpj = lineRows['CPFOUCNPJ'] || '';
@@ -133,82 +120,68 @@ const async = async () => {
                     NewId(),
                     lineRows['NOME'],
                     getUser(lineRows['CONSULTOR']) || Config.idUser,
-                    undefined,
+                    lineRows['EMAIL'],
                     cpf_cnpj.length === 11 ? cpf_cnpj : null,
                     cpf_cnpj.length === 14 ? cpf_cnpj : null,
+                    lineRows['TELEFONEFIXO'],
+                    lineRows['TELEFONECELULAR'],
+                    lineRows['CONTATO'],
                     undefined,
                     undefined,
-                    undefined,
-                    getDate(lineRows['NASC']),
-                    lineRows['SITUACAOCPF'],
-                    lineRows['DIRF'],
-                    undefined,
-                    undefined,
-                    true,
-                    undefined,
-                    new Date(),
-                    new Date(),
-                    Config.idUser,
-                    Config.idUser,
-                    address.id,
-                    getPriority(lineRows['PRIORIDADE']),
-                    undefined,
-                    getList(lineRows['LISTA']),
-                    Config.idUser,
-                    Config.idUser
+                    lineRows['OBSERVACOES'],
                 );
+                customer.id_address = address.id;
+                customer.id_creation_user = Config.idUser;
+                customer.id_update_user = Config.idUser;
 
                 const progress = {
                     id: NewId(),
-                    id_customer: customer.id
+                    id_customer: customer.id,
+                    open_date: getDate(lineRows['DATASITABERTO']),
+                    work_date: getDate(lineRows['DATASITTRABALHANDO']),
+                    negotiate_date: getDate(lineRows['DATASITNEGOCIADO']),
+                    contract_date: getDate(lineRows['DATASITCOMCONTRATO']),
+                    license_date: getDate(lineRows['DATASITCOMALVARA']),
+                    paid_date: getDate(lineRows['DATASITPAGO']),
+                    lower_date: getDate(lineRows['DATASITBAIXADO'])
                 };
 
                 const dirf = {
                     id: NewId(),
-                    id_customer: customer.id
-                }
-
-                const history = {
-                    id: NewId(),
-                    id_type: 'j6d9oq7b',
                     id_customer: customer.id,
-                    id_creation_user: Config.idUser
+                    solicitation_date: getDate(lineRows['DATASOLDIRF']),
+                    receive_date: getDate(lineRows['DATARECBDIRF']),
+                    comment: lineRows['COMENTARIODIRF'],
+                    id_status: getStatus(lineRows['STATUSDIRF'])
                 }
 
                 imports.push({
-                    address, customer, progress, dirf, history,
-                    accompaniments: [],
-                    tasks: [],
+                    address, customer, progress, dirf,
+                    actions: []
                 });
             }
 
             const lastImport = imports[imports.length - 1];
-            if (hasAccompaniment) {
-                const accompaniment = {
+            if (hasAction) {
+                const action = {
                     id: NewId(),
-                    date: getDate(lineRows['CLIENTES_ACOMPANHAMENTOS::DATA']),
-                    description: lineRows['CLIENTES_ACOMPANHAMENTOS::DESCRICAO'],
-                    id_customer: lastImport.customer.id,
-                    id_create_user: getUser(lineRows['CLIENTES_ACOMPANHAMENTOS::USUARIO_CRIACAO']) || Config.idUser,
-                    id_update_user: Config.idUser,
-                    accompaniment_created: new Date(),
-                    accompaniment_updated: new Date()
-                };
-                lastImport.accompaniments.push(accompaniment);
-            }
-
-            if (hasTask) {
-                const task = {
-                    id: NewId(),
-                    date: getDate(lineRows['CLIENTES_TAREFAS::DATA']),
-                    description: lineRows['CLIENTES_TAREFAS::DESCRICAO'],
-                    status: getStatus(lineRows['CLIENTES_TAREFAS::STATUS']) || 'c61d68a1',
+                    quantity: 1,
+                    dividends: 0,
+                    id_company: getCompany('ZERO'),
+                    eo: lineRows['EO'],
+                    ep: lineRows['EP'],
+                    on: lineRows['ON'],
+                    pn: lineRows['PN'],
+                    pa: lineRows['PA'],
+                    pb: lineRows['PB'],
+                    or: lineRows['ACAOOR'],
                     id_customer: lastImport.customer.id,
                     id_create_user: Config.idUser,
-                    task_created: new Date(),
-                    task_updated: new Date()
+                    id_update_user: Config.idUser,
+                    action_created: new Date(),
+                    action_updated: new Date()
                 };
-                lastImport.tasks.push(task);
+                lastImport.actions.push(action);
             }
         }
 
@@ -218,13 +191,24 @@ const async = async () => {
             console.log('Processando: ' + (offset + Config.limit) + ' / ' + imports.length);
             const partialImport = imports.slice(offset, offset + Config.limit);
 
+            const customerNames = partialImport.map(m => "'" + m.customer.name.replace(/'/gi, "\\'") + "'").join(', ');
+            const customerCpfs = partialImport.map(m => "'" + m.customer.cpf + "'").join(', ');
+            const customerCnpjs = partialImport.map(m => "'" + m.customer.cnpj + "'").join(', ');
+            const queryCustomers = "" +
+                "select c.id, c.name, a.id as id_address, p.id as progress_id, d.id as dirf_id, a.id_state from customers c " +
+                "join address a on a.id=c.id_address " +
+                "join customers_progress p on p.id_customer=c.id " +
+                "join customers_dirf d on d.id_customer=c.id " +
+                "where c.name in(" + customerNames + ") " +
+                "and (c.cpf in(" + customerCpfs + ") or c.cnpj in(" + customerCnpjs + ")) ";
+
+            const customerExistings = await connection.query(queryCustomers);
+
             const addressRows = [];
             const customerRows = [];
             const ProgressRows = [];
             const DirfRows = [];
-            const HistoryRows = [];
-            const TaskRows = [];
-            const AccompanimentRows = [];
+            const ActionRows = [];
 
             for (let index in partialImport) {
                 const {
@@ -232,33 +216,45 @@ const async = async () => {
                     customer,
                     progress,
                     dirf,
-                    history,
-                    accompaniments,
-                    tasks
+                    actions
                 } = partialImport[index];
+                const customerExisting = customerExistings.find(
+                    f => f.name.toUpperCase() === customer.name.toUpperCase()
+                        && f.cpf === customer.cpf
+                        && f.cnpj === customer.cnpj
+                        && f.id_state === address.id_state
+                );
+                if (customerExisting) {
+                    address.id = customerExisting.id_address;
+                    customer.id = customerExisting.id;
+                    progress.id_customer = customerExisting.id;
+                    progress.dirf = customerExisting.id;
+                    for (let indexAction in customer.actions) {
+                        customer.actions[indexAction].id_customer = customerExisting.id;
+                    }
+                }
 
                 addressRows.push([
                     address.id,
-                    address.id_state,
-                    address.id_city
+                    address.cep,
+                    address.public_place,
+                    address.number,
+                    address.complement,
+                    address.neighborhood
                 ]);
                 customerRows.push([
                     customer.id,
                     customer.name,
+                    customer.email,
                     customer.id_responsible,
                     customer.cpf,
                     customer.cnpj,
-                    customer.birth,
-                    customer.situation_doc,
+                    customer.tel_fix,
+                    customer.phone,
+                    customer.contact,
                     customer.dirf_observation,
-                    customer.child_can_view,
-                    customer.date_update_cpf,
-                    customer.date_update_cnpj,
-                    customer.id_update_cpf_user,
-                    customer.id_update_cnpj_user,
                     customer.id_address,
                     customer.id_priority,
-                    customer.id_list,
                     customer.id_creation_user,
                     customer.id_update_user,
                     new Date(),
@@ -266,58 +262,52 @@ const async = async () => {
                 ]);
                 ProgressRows.push([
                     progress.id,
-                    progress.id_customer
+                    progress.id_customer,
+                    progress.open_date,
+                    progress.work_date,
+                    progress.negotiate_date,
+                    progress.contract_date,
+                    progress.license_date,
+                    progress.paid_date,
+                    progress.lower_date
                 ]);
                 DirfRows.push([
                     dirf.id,
-                    dirf.id_customer
-                ]);
-                HistoryRows.push([
-                    history.id,
-                    history.id_type,
-                    history.id_customer,
-                    history.id_creation_user
+                    dirf.id_customer,
+                    dirf.solicitation_date,
+                    dirf.receive_date,
+                    dirf.comment,
+                    dirf.id_status
                 ]);
 
-                for (let indexTask in tasks) {
-                    const task = tasks[indexTask];
-                    TaskRows.push([
-                        task.id,
-                        task.date,
-                        task.description ? task.description : '[Importado]',
-                        task.status,
-                        task.id_customer,
-                        task.id_create_user,
-                        task.task_created,
-                        task.task_updated
-                    ]);
-                }
-
-                for (let indexAccompaniment in accompaniments) {
-                    const accompaniment = accompaniments[indexAccompaniment];
-                    AccompanimentRows.push([
-                        accompaniment.id,
-                        accompaniment.date,
-                        accompaniment.description
-                            ? accompaniment.description.slice(0, 15) + '...'
-                            : '[Título]',
-                        accompaniment.description ? accompaniment.description : '[Importado]',
-                        accompaniment.id_customer,
-                        accompaniment.id_create_user,
-                        accompaniment.id_update_user,
-                        accompaniment.accompaniment_created,
-                        accompaniment.accompaniment_updated
+                for (let indexAction in actions) {
+                    const action = actions[indexAction];
+                    ActionRows.push([
+                        action.id,
+                        action.quantity,
+                        action.dividends,
+                        action.id_company,
+                        action.eo,
+                        action.ep,
+                        action.on,
+                        action.pn,
+                        action.pa,
+                        action.pb,
+                        action.or,
+                        action.id_customer,
+                        action.id_create_user,
+                        action.id_update_user,
+                        action.action_created,
+                        action.action_updated
                     ]);
                 }
             }
 
-            await connection.query(Query.get(Scripts.insertAddress, addressRows));
-            await connection.query(Query.get(Scripts.insertCustomer, customerRows));
-            await connection.query(Query.get(Scripts.insertProgress, ProgressRows));
-            await connection.query(Query.get(Scripts.insertDirf, DirfRows));
-            await connection.query(Query.get(Scripts.insertHistory, HistoryRows));
-            await connection.query(Query.get(Scripts.insertTask, TaskRows));
-            await connection.query(Query.get(Scripts.insertAccompaniment, AccompanimentRows));
+            await connection.query(Query.get('address', Columns.address, addressRows));
+            await connection.query(Query.get('customers', Columns.customer, customerRows));
+            await connection.query(Query.get('customers_progress', Columns.progress, ProgressRows));
+            await connection.query(Query.get('customers_dirf', Columns.dirf, DirfRows));
+            await connection.query(Query.get('actions', Columns.actions, ActionRows));
 
             partial++;
         }
