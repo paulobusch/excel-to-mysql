@@ -100,7 +100,7 @@ const async = async () => {
                 || !!lineRows['PB']
                 || !!lineRows['ACAOOR'];
 
-            if (!hasCustomer && !hasAccompaniment && !hasTask)
+            if (!hasCustomer && !hasTask)
                 continue;
 
             if (hasCustomer) {
