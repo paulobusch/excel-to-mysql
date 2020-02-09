@@ -167,7 +167,7 @@ const async = async () => {
                     id: NewId(),
                     quantity: 1,
                     dividends: 0,
-                    id_company: getCompany('ZERO'),
+                    id_company: getCompany('Zerado'),
                     eo: lineRows['EO'],
                     ep: lineRows['EP'],
                     on: lineRows['ON'],
