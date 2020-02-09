@@ -73,6 +73,12 @@ const async = async () => {
         return result;
     }
 
+    const getFloat = (num) => {
+        if (!num) return null;
+        const value = parseFloat(num);
+        return isNaN(value) ? null : value;
+    }
+
     const files = fs.readdirSync(ExcelConfig.path);
     for (let index in files) {
         const file = files[index];
@@ -168,13 +174,13 @@ const async = async () => {
                     quantity: 1,
                     dividends: 0,
                     id_company: getCompany('Zerado'),
-                    eo: lineRows['EO'],
-                    ep: lineRows['EP'],
-                    on: lineRows['ON'],
-                    pn: lineRows['PN'],
-                    pa: lineRows['PA'],
-                    pb: lineRows['PB'],
-                    or: lineRows['ACAOOR'],
+                    eo: getFloat(lineRows['EO']),
+                    ep: getFloat(lineRows['EP']),
+                    on: getFloat(lineRows['ON']),
+                    pn: getFloat(lineRows['PN']),
+                    pa: getFloat(lineRows['PA']),
+                    pb: getFloat(lineRows['PB']),
+                    or: getFloat(lineRows['ACAOOR']),
                     id_customer: lastImport.customer.id,
                     id_create_user: Config.idUser,
                     id_update_user: Config.idUser,
