@@ -1,7 +1,7 @@
 module.exports = {
     Config: {
         idUser: 'oiyhjkmn',
-        limit: 100,
+        limit: 500,
     },
     MySqlConfig: {
         host: 'localhost',

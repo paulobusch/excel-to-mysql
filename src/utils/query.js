@@ -15,7 +15,7 @@ query.get = (table, columns, rows) => {
     const resultInsert = resultTable.map(row => '(' + row.map(cell => cell ? `'${cell}'` : 'NULL').join(',') + ')').join(', ');
     const resultUpdate = `on duplicate key update ${columns.map(c => "`" + c + "`=VALUES(`" + c + "`)").join(', ')}`;
 
-    return `insert into ${table} (${columns.join(', ')}) values ${resultInsert} ${resultUpdate};`;
+    return `insert into ${table} (${columns.map(c => "`" + c + "`").join(', ')}) values ${resultInsert} ${resultUpdate};`;
 }
 
 query.castCell = (value) => {

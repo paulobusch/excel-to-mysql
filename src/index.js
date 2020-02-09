@@ -26,7 +26,7 @@ const async = async () => {
     const queryCompanies = "select id, upper(name) as name from companies";
     const companies = await connection.query(queryCompanies);
     const getCompany = (companyStr) => {
-        if (!statusStr) return null;
+        if (!companyStr) return null;
         const comapanyName = companyStr.toUpperCase();
         const company = companies.find(c => c.name === comapanyName);
         if (!company) return null;
@@ -307,7 +307,7 @@ const async = async () => {
             await connection.query(Query.get('customers', Columns.customer, customerRows));
             await connection.query(Query.get('customers_progress', Columns.progress, ProgressRows));
             await connection.query(Query.get('customers_dirf', Columns.dirf, DirfRows));
-            await connection.query(Query.get('actions', Columns.actions, ActionRows));
+            await connection.query(Query.get('actions', Columns.action, ActionRows));
 
             partial++;
         }
