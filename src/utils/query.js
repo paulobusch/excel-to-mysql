@@ -26,7 +26,10 @@ query.castCell = (value) => {
 
     const type = typeof value;
     if (type === 'boolean') return value ? 1 : 0;
-    if (type === 'string') return value.replace(/'/gi, '"').replace(/\\/gi, '\\\\').slice(0, 1500);
+    if (type === 'string') return value
+        .replace(/'/gi, '"')
+        .replace(/[🙏,😘,😉,🏼,🌹]/gi, '')
+        .replace(/\\/gi, '\\\\').slice(0, 1500);
     return value;
 }
 
