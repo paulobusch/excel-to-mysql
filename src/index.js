@@ -250,7 +250,6 @@ const async = async () => {
                     customer.cnpj,
                     customer.birth,
                     customer.situation_doc,
-                    customer.dirf_observation,
                     customer.child_can_view,
                     customer.date_update_cpf,
                     customer.date_update_cnpj,
