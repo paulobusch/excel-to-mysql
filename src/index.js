@@ -86,6 +86,12 @@ const async = async () => {
             .replace(/[^a-z,0-9, ,áàâã,éèê,íìî,óòôõ,úùû,ç]/gi, '');
     }
 
+    const getNumber = (txt) => {
+        if (!txt) return null;
+        return txt
+            .replace(/[^0-9]/gi, '');
+    }
+
     const files = fs.readdirSync(ExcelConfig.path);
     for (let index in files) {
         const file = files[index];
@@ -205,8 +211,8 @@ const async = async () => {
             const partialImport = imports.slice(offset, offset + Config.limit);
 
             const customerNames = partialImport.map(m => "'" + getText(m.customer.name) + "'").join(', ');
-            const customerCpfs = partialImport.map(m => "'" + m.customer.cpf + "'").join(', ');
-            const customerCnpjs = partialImport.map(m => "'" + m.customer.cnpj + "'").join(', ');
+            const customerCpfs = partialImport.map(m => "'" + getNumber(m.customer.cpf) + "'").join(', ');
+            const customerCnpjs = partialImport.map(m => "'" + getNumber(m.customer.cnpj) + "'").join(', ');
             const queryCustomers = "" +
                 "select c.id, c.name, c.cpf, c.cnpj, a.id as id_address, p.id as progress_id, d.id as dirf_id, a.id_state from customers c " +
                 "join address a on a.id=c.id_address " +
