@@ -79,6 +79,13 @@ const async = async () => {
         return isNaN(value) ? null : value;
     }
 
+    const getText = (txt) => {
+        if (!txt) return null;
+        return txt
+            .replace(/'/gi, "\\'")
+            .replace(/[^a-z,0-9, ,áàâã,éèê,íìî,óòôõ,úùû,ç]/gi, '');
+    }
+
     const files = fs.readdirSync(ExcelConfig.path);
     for (let index in files) {
         const file = files[index];
@@ -124,7 +131,7 @@ const async = async () => {
                 const cpf_cnpj = lineRows['CPFOUCNPJ'] || '';
                 const customer = new Customer(
                     NewId(),
-                    lineRows['NOME'],
+                    getText(lineRows['NOME']),
                     getUser(lineRows['CONSULTOR']) || Config.idUser,
                     lineRows['EMAIL'],
                     cpf_cnpj.length === 11 ? cpf_cnpj : null,
@@ -197,11 +204,11 @@ const async = async () => {
             console.log('Processando: ' + (offset + Config.limit) + ' / ' + imports.length);
             const partialImport = imports.slice(offset, offset + Config.limit);
 
-            const customerNames = partialImport.map(m => "'" + m.customer.name.replace(/'/gi, "\\'") + "'").join(', ');
+            const customerNames = partialImport.map(m => "'" + getText(m.customer.name) + "'").join(', ');
             const customerCpfs = partialImport.map(m => "'" + m.customer.cpf + "'").join(', ');
             const customerCnpjs = partialImport.map(m => "'" + m.customer.cnpj + "'").join(', ');
             const queryCustomers = "" +
-                "select c.id, c.name, a.id as id_address, p.id as progress_id, d.id as dirf_id, a.id_state from customers c " +
+                "select c.id, c.name, c.cpf, c.cnpj, a.id as id_address, p.id as progress_id, d.id as dirf_id, a.id_state from customers c " +
                 "join address a on a.id=c.id_address " +
                 "join customers_progress p on p.id_customer=c.id " +
                 "join customers_dirf d on d.id_customer=c.id " +
@@ -232,9 +239,10 @@ const async = async () => {
                 );
                 if (customerExisting) {
                     address.id = customerExisting.id_address;
+                    customer.id_address = customerExisting.id_address;
                     customer.id = customerExisting.id;
                     progress.id_customer = customerExisting.id;
-                    progress.dirf = customerExisting.id;
+                    dirf.id_customer = customerExisting.id;
                     for (let indexAction in customer.actions) {
                         customer.actions[indexAction].id_customer = customerExisting.id;
                     }
@@ -258,7 +266,6 @@ const async = async () => {
                     customer.tel_fix,
                     customer.phone,
                     customer.contact,
-                    customer.dirf_observation,
                     customer.id_address,
                     customer.id_priority,
                     customer.id_creation_user,
@@ -268,7 +275,7 @@ const async = async () => {
                 ]);
                 ProgressRows.push([
                     progress.id,
-                    progress.id_customer,
+                    customer.id,
                     progress.open_date,
                     progress.work_date,
                     progress.negotiate_date,
@@ -279,7 +286,7 @@ const async = async () => {
                 ]);
                 DirfRows.push([
                     dirf.id,
-                    dirf.id_customer,
+                    customer.id,
                     dirf.solicitation_date,
                     dirf.receive_date,
                     dirf.comment,
@@ -293,6 +300,7 @@ const async = async () => {
                         action.quantity,
                         action.dividends,
                         action.id_company,
+                        customer.id,
                         action.eo,
                         action.ep,
                         action.on,
@@ -300,7 +308,6 @@ const async = async () => {
                         action.pa,
                         action.pb,
                         action.or,
-                        action.id_customer,
                         action.id_create_user,
                         action.id_update_user,
                         action.action_created,
