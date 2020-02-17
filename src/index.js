@@ -147,7 +147,7 @@ const async = async () => {
                     lineRows['CONTATO'],
                     undefined,
                     undefined,
-                    lineRows['OBSERVACOES'],
+                    lineRows['OBSERVACOES'] + lineRows['DIRF']
                 );
                 customer.id_address = address.id;
                 customer.id_creation_user = Config.idUser;
@@ -277,7 +277,8 @@ const async = async () => {
                     customer.id_creation_user,
                     customer.id_update_user,
                     new Date(),
-                    new Date()
+                    new Date(),
+                    customer.dirf_observation
                 ]);
                 ProgressRows.push([
                     progress.id,

@@ -18,6 +18,7 @@ module.exports = {
         'TELEFONEFIXO',
         'TELEFONECELULAR',
         'CONTATO',
+        'DIRF',
         'DATASOLDIRF',
         'DATARECBDIRF',
         'COMENTARIODIRF',
