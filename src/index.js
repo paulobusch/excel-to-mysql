@@ -141,11 +141,12 @@ const async = async () => {
                     undefined,
                     getDate(lineRows['NASC']),
                     lineRows['SITUACAOCPF'],
-                    lineRows['DIRF'],
+                    undefined,
                     undefined,
                     undefined,
                     true,
-                    undefined,
+                    'VALOR POUP OU DJ: ' + lineRows['VALORPOUPOUDJ'] +
+                    'DIRF: ' + lineRows['DIRF'],
                     new Date(),
                     new Date(),
                     Config.idUser,
@@ -261,7 +262,8 @@ const async = async () => {
                     customer.id_creation_user,
                     customer.id_update_user,
                     new Date(),
-                    new Date()
+                    new Date(),
+                    customer.observation
                 ]);
                 ProgressRows.push([
                     progress.id,
