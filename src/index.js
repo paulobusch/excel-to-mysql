@@ -147,7 +147,9 @@ const async = async () => {
                     lineRows['CONTATO'],
                     undefined,
                     undefined,
-                    lineRows['OBSERVACOES'] + lineRows['DIRF']
+                    'VALOR POUP OU DJ: ' + lineRows['VALORPOUPOUDJ'] +
+                    'OBSERVACOES: ' + lineRows['OBSERVACOES'] +
+                    'DIRF: ' + lineRows['DIRF']
                 );
                 customer.id_address = address.id;
                 customer.id_creation_user = Config.idUser;

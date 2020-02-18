@@ -30,6 +30,7 @@ module.exports = {
         'DATASITCOMCONTRATO',
         'DATASITCOMALVARA',
         'DATASITPAGO',
-        'DATASITBAIXADO'
+        'DATASITBAIXADO',
+        'VALORPOUPOUDJ'
     ]
 }
