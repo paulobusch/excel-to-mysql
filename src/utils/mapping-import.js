@@ -1,5 +1,6 @@
 module.exports = {
     Customers: [
+        '__KF_CONSULTOR',
         'CIDADE',
         'CONSULTOR',
         'CPFOUCNPJ',
@@ -16,6 +17,6 @@ module.exports = {
         'CLIENTES_TAREFAS::DATA',
         'CLIENTES_TAREFAS::DESCRICAO',
         'CLIENTES_TAREFAS::STATUS',
-        'VALORPOUPOUDJ'
+        'VALOR.POUP.OU.DJ'
     ]
 }

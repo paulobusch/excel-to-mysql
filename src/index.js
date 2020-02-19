@@ -23,6 +23,15 @@ const async = async () => {
         return user.id;
     };
 
+    const queryUsersKf = "select id, kf from users_keys";
+    const usersKf = await connection.query(queryUsersKf);
+    const getUserKf = (userKf) => {
+        if (!userKf) return null;
+        const user = usersKf.find(u => u.kf == userKf);
+        if (!user) return null;
+        return user.id;
+    };
+
     const queryPriorities = "select id, upper(name) as name from customers_priorities";
     const priorities = await connection.query(queryPriorities);
     const getPriority = (priorityStr) => {
@@ -132,7 +141,7 @@ const async = async () => {
                 const customer = new Customer(
                     NewId(),
                     lineRows['NOME'],
-                    getUser(lineRows['CONSULTOR']) || Config.idUser,
+                    getUserKf(lineRows['__KF_CONSULTOR']) || Config.idUser,
                     undefined,
                     cpf_cnpj.length === 11 ? cpf_cnpj : null,
                     cpf_cnpj.length === 14 ? cpf_cnpj : null,
@@ -145,7 +154,7 @@ const async = async () => {
                     undefined,
                     undefined,
                     true,
-                    'VALOR POUP OU DJ: ' + lineRows['VALORPOUPOUDJ'] +
+                    'VALOR POUP OU DJ: ' + lineRows['VALOR.POUP.OU.DJ'] +
                     'DIRF: ' + lineRows['DIRF'],
                     new Date(),
                     new Date(),

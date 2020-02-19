@@ -4,10 +4,10 @@ module.exports = {
         idUser: 'oiyhjkmn',
     },
     MySqlConfig: {
-        host: 'localhost',
-        user: 'root',
-        password: '123456',
-        database: 'vetorial'
+        host: 'vcsystem.com.br',
+        user: 'wwvcsy_root',
+        password: '@GGf01022000',
+        database: 'wwvcsy_vetorial'
     },
     ExcelConfig: {
         path: 'data'
