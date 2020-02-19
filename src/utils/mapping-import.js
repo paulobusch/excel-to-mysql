@@ -1,5 +1,6 @@
 module.exports = {
     Customers: [
+        '__KF_CONSULTOR',
         'NOME',
         'CPFOUCNPJ',
         'EO',
@@ -31,6 +32,6 @@ module.exports = {
         'DATASITCOMALVARA',
         'DATASITPAGO',
         'DATASITBAIXADO',
-        'VALORPOUPOUDJ'
+        'VALOR.POUP.OU.DJ'
     ]
 }
