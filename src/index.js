@@ -72,14 +72,19 @@ const async = async () => {
         return category.id;
     };
 
+    const formatDate = (date) => {
+        if (!date) return 'NULL';
+        return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate() + 2}`;
+    }
+
     const getDate = (date) => {
         if (!date) return null;
-        if (date instanceof Date) return date;
+        if (date instanceof Date) return formatDate(date);
 
         if (date.length === 4 && !isNaN(parseInt(date))) {
             const result = new Date(parseInt(date), 0, 1);
             if (result == 'Invalid Date') return null;
-            return result;
+            return formatDate(result);
         }
 
         const arr = date.split('/');
@@ -88,7 +93,7 @@ const async = async () => {
         const year = parseInt(arr[2]);
         const result = new Date(year, month, day);
         if (result == 'Invalid Date') return null;
-        return result;
+        return formatDate(result);
     }
 
     const getFloat = (num) => {
@@ -107,7 +112,7 @@ const async = async () => {
     const getNumber = (txt) => {
         if (!txt) return null;
         return txt
-            .replace(/[^0-9]/gi, '') || 'NULL';
+            .replace(/[^0-9,.]/gi, '') || 'NULL';
     }
 
     const isPositive = (txt) => {
