@@ -14,7 +14,7 @@ module.exports = {
     },
     Scripts: {
         insertAddress: "insert into address(`id`, `id_state`, `id_city`)",
-        insertCustomer: "insert into customers(`id`, `name`, `id_responsible`, `cpf`, `cnpj`, `birth`, `situation_doc`, `child_can_view`, `date_update_cpf`, `date_update_cnpj`, `id_update_cpf_user`, `id_update_cnpj_user`, `id_address`, `id_priority`, `id_list`, `id_creation_user`, `id_update_user`, `customer_created`, `customer_updated`, `observation`)",
+        insertCustomer: "insert into customers(`id`, `kf`, `name`, `id_responsible`, `cpf`, `cnpj`, `birth`, `situation_doc`, `child_can_view`, `date_update_cpf`, `date_update_cnpj`, `id_update_cpf_user`, `id_update_cnpj_user`, `id_address`, `id_priority`, `id_list`, `id_creation_user`, `id_update_user`, `customer_created`, `customer_updated`, `observation`)",
         insertProgress: "insert into customers_progress(`id`, `id_customer`)",
         insertDirf: "insert into customers_dirf(`id`, `id_customer`)",
         insertHistory: "insert into customer_histories(`id`, `id_type`, `id_customer`, `id_creation_user`)",

@@ -140,6 +140,7 @@ const async = async () => {
                 const cpf_cnpj = lineRows['CPFOUCNPJ'] || '';
                 const customer = new Customer(
                     NewId(),
+                    lineRows['___KP_CLIENTE'],
                     lineRows['NOME'],
                     getUserKf(lineRows['__KF_CONSULTOR']) || Config.idUser,
                     undefined,
@@ -254,6 +255,7 @@ const async = async () => {
                 ]);
                 customerRows.push([
                     customer.id,
+                    customer.kf,
                     customer.name,
                     customer.id_responsible,
                     customer.cpf,

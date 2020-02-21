@@ -1,6 +1,7 @@
 class Customer {
     constructor(
         id,
+        kf,
         name,
         id_responsible,
         email,
@@ -28,6 +29,7 @@ class Customer {
         id_update_user
     ) {
         this.id = id;
+        this.kf = kf;
         this.name = name;
         this.id_responsible = id_responsible;
         this.email = email;

@@ -1,5 +1,6 @@
 module.exports = {
     Customers: [
+        '___KP_CLIENTE',
         '__KF_CONSULTOR',
         'CIDADE',
         'CONSULTOR',
