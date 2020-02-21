@@ -18,5 +18,7 @@ module.exports = {
         progress: [`id`, `id_customer`, 'open_date', 'work_date', 'negotiate_date', 'contract_date', 'license_date', 'paid_date', 'lower_date'],
         dirf: [`id`, `id_customer`, 'solicitation_date', 'receive_date', 'comment', 'id_status'],
         action: ['id', 'quantity', 'dividends', 'id_company', 'id_customer', 'eo', 'ep', 'on', 'pn', 'pa', 'pb', 'or', 'id_create_user', 'id_update_user', 'action_created', 'action_updated'],
+        finance: ['id', 'date', 'value', 'description', 'is_positive', 'id_category', 'id_customer', 'id_create_user', 'id_update_user', 'finance_created', 'finance_updated'],
+        categories: ['id', 'name'],
     }
 }

@@ -1,5 +1,6 @@
 module.exports = {
     Customers: [
+        '___KP_CLIENTE',
         '__KF_CONSULTOR',
         'NOME',
         'CPFOUCNPJ',
@@ -32,6 +33,13 @@ module.exports = {
         'DATASITCOMALVARA',
         'DATASITPAGO',
         'DATASITBAIXADO',
-        'VALOR.POUP.OU.DJ'
+        'VALOR.POUP.OU.DJ',
+        'CLIENTES_PAGAMENTOS::__KP_PAGAMENTO',
+        'CLIENTES_PAGAMENTOS::USUARIO_CRIACAO',
+        'CLIENTES_PAGAMENTOS::DATA',
+        'CLIENTES_PAGAMENTOS::VALOR',
+        'CLIENTES_PAGAMENTOS::DESCRICAO',
+        'CLIENTES_PAGAMENTOS::CATEGORIA',
+        'CLIENTES_PAGAMENTOS::CATEGORIA2'
     ]
 }
