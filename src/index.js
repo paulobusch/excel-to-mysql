@@ -398,7 +398,7 @@ const async = async () => {
                         finance.description,
                         finance.is_positive,
                         finance.id_category,
-                        finance.id_customer,
+                        customer.id,
                         finance.id_create_user,
                         finance.id_update_user,
                         finance.finance_created,
