@@ -297,7 +297,7 @@ const async = async () => {
                     finances
                 } = partialImport[index];
                 const customerExisting = customerExistings.find(
-                    f => f.name.toUpperCase() === customer.name.toUpperCase()
+                    f => f.name && customer.name && f.name.toUpperCase() === customer.name.toUpperCase()
                         && f.cpf === customer.cpf
                         && f.cnpj === customer.cnpj
                         && f.id_state === address.id_state
