@@ -63,6 +63,17 @@ const async = async () => {
         return state.id;
     };
 
+    const queryCities = "select id, upper(name) as name, id_state from cities";
+    const cities = await connection.query(queryCities);
+    _.forEach(cities, c => c.name = _.deburr(c.name.toUpperCase()));
+    const getCity = (stateId, cityStr) => {
+        if (!stateId || !cityStr) return null;
+        const cityName = _.deburr(cityStr.toUpperCase());
+        const city = cities.find(f => f.id_state === stateId && f.name === cityName);
+        if (!city) return null;
+        return city.id;
+    };
+
     const queryCategories = "select id, name from finances_categories";
     const categories = await connection.query(queryCategories);
     const getCategory = (ctStr) => {
@@ -121,6 +132,11 @@ const async = async () => {
         return value === 'Entrada';
     }
 
+    const getExtension = (txt) => {
+        if (!txt) return null;
+        return txt.substring(txt.lastIndexOf('.'))
+    }
+
     const files = fs.readdirSync(ExcelConfig.path);
     for (let index in files) {
         const file = files[index];
@@ -141,6 +157,9 @@ const async = async () => {
 
             const hasCustomer = !!lineRows['___KP_CLIENTE'];
             const hasFinance = !!lineRows['CLIENTES_PAGAMENTOS::__KP_PAGAMENTO'];
+            const hasAccompaniment = !!lineRows['CLIENTES_ACOMPANHAMENTOS::DATA'];
+            const hasTask = !!lineRows['CLIENTES_TAREFAS::DATA'];
+            const hasDocument = !!lineRows['CLIENTES_DOCUMENTOS::__KP_DOCUMENTO'];
             const hasAction = !!lineRows['EO']
                 || !!lineRows['EP']
                 || !!lineRows['ON']
@@ -154,9 +173,11 @@ const async = async () => {
 
             if (hasCustomer) {
                 const state = getState(lineRows['UF_ESTADO']);
+                const city = getCity(state, lineRows['CIDADE']);
                 const address = {
                     id: NewId(),
                     id_state: state,
+                    id_city: city,
                     cep: lineRows['CEP'],
                     public_place: lineRows['LOGRADOURO'],
                     number: lineRows['NUMERO'],
@@ -176,11 +197,25 @@ const async = async () => {
                     lineRows['TELEFONEFIXO'],
                     lineRows['TELEFONECELULAR'],
                     lineRows['CONTATO'],
-                    undefined,
-                    undefined,
+                    getDate(lineRows['NASC']),
+                    lineRows['SITUACAOCPF'],
                     'VALOR POUP OU DJ: ' + lineRows['VALOR.POUP.OU.DJ'] +
                     'OBSERVACOES: ' + lineRows['OBSERVACOES'] +
-                    'DIRF: ' + lineRows['DIRF']
+                    'DIRF: ' + lineRows['DIRF'],
+                    undefined,
+                    undefined,
+                    true,
+                    undefined,
+                    new Date(),
+                    new Date(),
+                    Config.idUser,
+                    Config.idUser,
+                    undefined,
+                    undefined,
+                    undefined,
+                    undefined,
+                    Config.idUser,
+                    getUser(lineRows['_USUARIO_MODIFICACAO']) || Config.idUser
                 );
                 customer.id_address = address.id;
                 customer.id_creation_user = Config.idUser;
@@ -205,13 +240,23 @@ const async = async () => {
                     receive_date: getDate(lineRows['DATARECBDIRF']),
                     comment: lineRows['COMENTARIODIRF'],
                     id_status: getStatus(lineRows['STATUSDIRF'])
+                };
+
+                const history = {
+                    id: NewId(),
+                    id_type: 'j6d9oq7b',
+                    id_customer: customer.id,
+                    id_creation_user: Config.idUser
                 }
 
                 imports.push({
-                    address, customer, progress, dirf,
+                    address, history, customer, progress, dirf,
                     actions: [],
                     finances: [],
-                    categories: []
+                    categories: [],
+                    accompaniments: [],
+                    tasks: [],
+                    documents: [],
                 });
             }
 
@@ -260,6 +305,50 @@ const async = async () => {
                 };
                 lastImport.finances.push(finance);
             }
+
+            if (hasAccompaniment) {
+                const accompaniment = {
+                    id: NewId(),
+                    date: getDate(lineRows['CLIENTES_ACOMPANHAMENTOS::DATA']),
+                    description: lineRows['CLIENTES_ACOMPANHAMENTOS::DESCRICAO'],
+                    id_customer: lastImport.customer.id,
+                    id_create_user: getUser(lineRows['CLIENTES_ACOMPANHAMENTOS::USUARIO_CRIACAO']) || Config.idUser,
+                    id_update_user: Config.idUser,
+                    accompaniment_created: new Date(),
+                    accompaniment_updated: new Date()
+                };
+                lastImport.accompaniments.push(accompaniment);
+            }
+
+            if (hasTask) {
+                const task = {
+                    id: NewId(),
+                    date: getDate(lineRows['CLIENTES_TAREFAS::DATA']),
+                    description: lineRows['CLIENTES_TAREFAS::DESCRICAO'],
+                    status: getStatus(lineRows['CLIENTES_TAREFAS::STATUS']) || 'c61d68a1',
+                    id_customer: lastImport.customer.id,
+                    id_create_user: Config.idUser,
+                    task_created: new Date(),
+                    task_updated: new Date()
+                };
+                lastImport.tasks.push(task);
+            }
+
+            if (hasDocument) {
+                const document = {
+                    id: NewId(),
+                    name: getText(lineRows['CLIENTES_DOCUMENTOS::NOME']),
+                    extension: getExtension(lineRows['CLIENTES_DOCUMENTOS::NOMEDOARQUIVO']),
+                    size: getNumber(lineRows['CLIENTES_DOCUMENTOS::TAMANHOARQUIVO']) || 0,
+                    description: getText(lineRows['CLIENTES_DOCUMENTOS::OBSERVACAO']),
+                    id_customer: lastImport.customer.id,
+                    id_create_user: getUser(lineRows['CLIENTES_DOCUMENTOS::USUARIO_CRIACAO']) || Config.idUser,
+                    id_update_user: getUser(lineRows['CLIENTES_DOCUMENTOS::USUARIO_MODIFICACAO']) || Config.idUser,
+                    document_created: getDate(lineRows['CLIENTES_DOCUMENTOS::DATA_CRIACAO']) || new Date(),
+                    document_updated: getDate(lineRows['CLIENTES_DOCUMENTOS::DATA_CRIACAO']) || new Date()
+                };
+                lastImport.documents.push(document);
+            }
         }
 
         let partial = 0;
@@ -285,15 +374,23 @@ const async = async () => {
             const ActionRows = [];
             const CategoryRows = [];
             const FinanceRows = [];
+            const HistoryRows = [];
+            const TaskRows = [];
+            const AccompanimentRows = [];
+            const DocumentRows = [];
 
             for (let index in partialImport) {
                 const {
                     address,
                     customer,
+                    history,
                     progress,
                     dirf,
                     actions,
+                    tasks,
                     categories,
+                    accompaniments,
+                    documents,
                     finances
                 } = partialImport[index];
                 const customerExisting = customerExistings.find(
@@ -315,6 +412,8 @@ const async = async () => {
 
                 addressRows.push([
                     address.id,
+                    address.id_state,
+                    address.id_city,
                     address.cep,
                     address.public_place,
                     address.number,
@@ -323,6 +422,14 @@ const async = async () => {
                 ]);
                 customerRows.push([
                     customer.id,
+                    customer.kf,
+                    customer.birth,
+                    customer.situation_doc,
+                    customer.child_can_view,
+                    customer.date_update_cpf,
+                    customer.date_update_cnpj,
+                    customer.id_update_cpf_user,
+                    customer.id_update_cnpj_user,
                     customer.name,
                     customer.email,
                     customer.id_responsible,
@@ -358,6 +465,12 @@ const async = async () => {
                     dirf.comment,
                     dirf.id_status
                 ]);
+                HistoryRows.push([
+                    history.id,
+                    history.id_type,
+                    customer.id,
+                    history.id_creation_user
+                ]);
 
                 for (let indexAction in actions) {
                     const action = actions[indexAction];
@@ -378,6 +491,20 @@ const async = async () => {
                         action.id_update_user,
                         action.action_created,
                         action.action_updated
+                    ]);
+                }
+
+                for (let indexTask in tasks) {
+                    const task = tasks[indexTask];
+                    TaskRows.push([
+                        task.id,
+                        task.date,
+                        task.description ? task.description : '[Importado]',
+                        task.status,
+                        customer.id,
+                        task.id_create_user,
+                        task.task_created,
+                        task.task_updated
                     ]);
                 }
 
@@ -405,6 +532,39 @@ const async = async () => {
                         finance.finance_updated
                     ]);
                 }
+
+                for (let indexAccompaniment in accompaniments) {
+                    const accompaniment = accompaniments[indexAccompaniment];
+                    AccompanimentRows.push([
+                        accompaniment.id,
+                        accompaniment.date,
+                        accompaniment.description
+                            ? accompaniment.description.slice(0, 15) + '...'
+                            : '[Título]',
+                        accompaniment.description ? accompaniment.description : '[Importado]',
+                        customer.id,
+                        accompaniment.id_create_user,
+                        accompaniment.id_update_user,
+                        accompaniment.accompaniment_created,
+                        accompaniment.accompaniment_updated
+                    ]);
+                }
+
+                for (let indexDocument in documents) {
+                    const document = documents[indexDocument];
+                    DocumentRows.push([
+                        document.id,
+                        document.name,
+                        document.extension,
+                        document.size,
+                        document.description,
+                        customer.id,
+                        document.id_create_user,
+                        document.id_update_user,
+                        document.document_created,
+                        document.document_updated
+                    ]);
+                }
             }
 
             await connection.query(Query.get('address', Columns.address, addressRows));
@@ -413,6 +573,10 @@ const async = async () => {
             await connection.query(Query.get('customers_dirf', Columns.dirf, DirfRows));
             await connection.query(Query.get('actions', Columns.action, ActionRows));
             await connection.query(Query.get('finances_categories', Columns.categories, CategoryRows));
+            await connection.query(Query.get('accompaniments', Columns.accompaniment, AccompanimentRows));
+            await connection.query(Query.get('tasks', Columns.task, TaskRows));
+            await connection.query(Query.get('documents', Columns.document, DocumentRows));
+            await connection.query(Query.get('customer_histories', Columns.history, HistoryRows));
             await connection.query(Query.get('finances', Columns.finance, FinanceRows));
 
             partial++;
