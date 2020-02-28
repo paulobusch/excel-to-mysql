@@ -63,6 +63,16 @@ const async = async () => {
         return state.id;
     };
 
+    const queryLists = "select id, upper(name) as name from customer_lists where removed=0";
+    const lists = await connection.query(queryLists);
+    const getList = (listStr) => {
+        if (!listStr) return null;
+        const listName = listStr.toUpperCase();
+        const list = lists.find(l => l.name === listName);
+        if (!list) return null;
+        return list.id;
+    };
+
     const queryCities = "select id, upper(name) as name, id_state from cities";
     const cities = await connection.query(queryCities);
     _.forEach(cities, c => c.name = _.deburr(c.name.toUpperCase()));
@@ -199,9 +209,10 @@ const async = async () => {
                     lineRows['CONTATO'],
                     getDate(lineRows['NASC']),
                     lineRows['SITUACAOCPF'],
-                    'VALOR POUP OU DJ: ' + lineRows['VALOR.POUP.OU.DJ'] +
-                    'OBSERVACOES: ' + lineRows['OBSERVACOES'] +
-                    'DIRF: ' + lineRows['DIRF'],
+                    `
+DIRF: ${lineRows['DIRF'] || '[vazio]'}
+VALOR POUP OU DJ: ${lineRows['VALOR.POUP.OU.DJ'] || '[vazio]'}
+OBSERVACOES: ${lineRows['OBSERVACOES'] || '[vazio]'}`,
                     undefined,
                     undefined,
                     true,
@@ -212,8 +223,8 @@ const async = async () => {
                     Config.idUser,
                     undefined,
                     undefined,
-                    undefined,
-                    undefined,
+                    getDate(lineRows['DATASITBAIXADO']) ? 'vrfenn0n' : 'vrfenn0f',
+                    getList(lineRows['LISTA']),
                     Config.idUser,
                     getUser(lineRows['_USUARIO_MODIFICACAO']) || Config.idUser
                 );
@@ -444,7 +455,9 @@ const async = async () => {
                     customer.id_update_user,
                     new Date(),
                     new Date(),
-                    customer.dirf_observation
+                    customer.dirf_observation,
+                    customer.id_status,
+                    customer.id_list
                 ]);
                 ProgressRows.push([
                     progress.id,
