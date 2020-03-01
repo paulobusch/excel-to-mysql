@@ -137,8 +137,9 @@ const async = async () => {
 
     const getNumber = (txt) => {
         if (!txt) return null;
-        return txt
-            .replace(/[^0-9,.]/gi, '') || 'NULL';
+        var value = parseFloat(txt.replace(/[^0-9,.]/gi, ''));
+        if (isNaN(value)) return 'NULL';
+        return value * 1000;
     }
 
     const isPositive = (txt) => {
