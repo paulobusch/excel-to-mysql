@@ -42,8 +42,13 @@ const async = async () => {
         return company.id;
     };
 
-    const queryStatus = "select id, upper(name) as name from dirf_status";
-    const status = await connection.query(queryStatus);
+    const getStatusTask = (statusStr) => {
+        if (!statusStr) return 'c61d68a1';
+        const statusName = statusStr.toUpperCase();
+        if (statusName == 'CONCLUÍDA') return 'c61d7iuy';
+        return 'c61d68a1';
+    };
+
     const getStatus = (statusStr) => {
         if (!statusStr) return null;
         const statusName = statusStr.toUpperCase();
@@ -336,7 +341,7 @@ OBSERVACOES: ${lineRows['OBSERVACOES'] || '[vazio]'}`,
                     id: NewId(),
                     date: getDate(lineRows['CLIENTES_TAREFAS::DATA']),
                     description: lineRows['CLIENTES_TAREFAS::DESCRICAO'],
-                    status: getStatus(lineRows['CLIENTES_TAREFAS::STATUS']) || 'c61d68a1',
+                    status: getStatusTask(lineRows['CLIENTES_TAREFAS::STATUS']),
                     id_customer: lastImport.customer.id,
                     id_create_user: Config.idUser,
                     task_created: new Date(),
