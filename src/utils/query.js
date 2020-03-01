@@ -1,6 +1,6 @@
 const query = {};
 
-query.get = (insert, rows) => {
+query.get = (table, columns, rows) => {
     if (!rows || rows.length === 0)
         return 'select 0;';
 
@@ -12,11 +12,10 @@ query.get = (insert, rows) => {
         resultTable.push(resultRow);
     }
 
-    resultScipt = resultTable.map(row => {
-        return '(' + row.map(cell => cell ? `'${cell}'` : 'NULL').join(',') + ')';
-    }).join(', ') + ';';
+    const resultInsert = resultTable.map(row => '(' + row.map(cell => [null, undefined].indexOf(cell) === -1 ? `'${cell}'` : 'NULL').join(',') + ')').join(', ');
+    const resultUpdate = `on duplicate key update ${columns.map(c => "`" + c + "`=VALUES(`" + c + "`)").join(', ')}`;
 
-    return insert + ' values ' + resultScipt;
+    return `insert into ${table} (${columns.map(c => "`" + c + "`").join(', ')}) values ${resultInsert} ${resultUpdate};`;
 }
 
 query.castCell = (value) => {

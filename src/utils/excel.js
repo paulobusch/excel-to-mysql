@@ -21,8 +21,10 @@ excel.load = async (path, expectedColumns) => {
 
     if (expectedColumns) {
         for (var c = 0; c < expectedColumns.length; c++) {
-            if (!columns.some(col => col.name == expectedColumns[c]))
+            if (!columns.some(col => col.name == expectedColumns[c])) {
+                console.log('Esperado: ' + expectedColumns[c]);
                 return null;
+            }
         }
     }
 
