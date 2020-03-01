@@ -209,16 +209,14 @@ const async = async () => {
                     lineRows['CONTATO'],
                     getDate(lineRows['NASC']),
                     lineRows['SITUACAOCPF'],
-                    `
-DIRF: ${lineRows['DIRF'] || '[vazio]'}
-VALOR POUP OU DJ: ${lineRows['VALOR.POUP.OU.DJ'] || '[vazio]'}
-OBSERVACOES: ${lineRows['OBSERVACOES'] || '[vazio]'}`,
                     undefined,
                     undefined,
                     undefined,
                     true,
-                    'VALOR POUP OU DJ: ' + lineRows['VALOR.POUP.OU.DJ'] +
-                    'DIRF: ' + lineRows['DIRF'],
+                    `
+DIRF: ${lineRows['DIRF'] || '[vazio]'}
+VALOR POUP OU DJ: ${lineRows['VALOR.POUP.OU.DJ'] || '[vazio]'}
+OBSERVACOES: ${lineRows['OBSERVACOES'] || '[vazio]'}`,
                     new Date(),
                     new Date(),
                     Config.idUser,
@@ -457,7 +455,7 @@ OBSERVACOES: ${lineRows['OBSERVACOES'] || '[vazio]'}`,
                     customer.id_update_user,
                     new Date(),
                     new Date(),
-                    customer.dirf_observation,
+                    customer.observation,
                     customer.id_status,
                     customer.id_list
                 ]);
@@ -590,7 +588,7 @@ OBSERVACOES: ${lineRows['OBSERVACOES'] || '[vazio]'}`,
             await connection.query(Query.get('finances_categories', Columns.categories, CategoryRows));
             await connection.query(Query.get('accompaniments', Columns.accompaniment, AccompanimentRows));
             await connection.query(Query.get('tasks', Columns.task, TaskRows));
-            await connection.query(Query.get('documents', Columns.document, DocumentRows));
+            // await connection.query(Query.get('documents', Columns.document, DocumentRows));
             await connection.query(Query.get('customer_histories', Columns.history, HistoryRows));
             await connection.query(Query.get('finances', Columns.finance, FinanceRows));
 
