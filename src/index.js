@@ -49,6 +49,8 @@ const async = async () => {
         return 'c61d68a1';
     };
 
+    const queryStatus = "select id, upper(name) as name from dirf_status";
+    const status = await connection.query(queryStatus);
     const getStatus = (statusStr) => {
         if (!statusStr) return null;
         const statusName = statusStr.toUpperCase();
