@@ -6,6 +6,7 @@ module.exports = {
         'CONSULTOR',
         '_USUARIO_MODIFICACAO',
         'NOME',
+        'PRIORIDADE',
         'CPFOUCNPJ',
         'EO',
         'EP',

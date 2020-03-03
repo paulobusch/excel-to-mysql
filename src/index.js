@@ -80,6 +80,16 @@ const async = async () => {
         return list.id;
     };
 
+    const queryPriority = "select id, upper(name) as name from customers_priorities";
+    const priorities = await connection.query(queryPriority);
+    const getPriority = (ptrStr) => {
+        if (!ptrStr) return null;
+        const ptrName = ptrStr.toUpperCase();
+        const ptr = priorities.find(l => l.name === ptrName);
+        if (!ptr) return null;
+        return ptr.id;
+    }
+
     const queryCities = "select id, upper(name) as name, id_state from cities";
     const cities = await connection.query(queryCities);
     _.forEach(cities, c => c.name = _.deburr(c.name.toUpperCase()));
@@ -139,9 +149,11 @@ const async = async () => {
 
     const getNumber = (txt) => {
         if (!txt) return null;
-        var value = parseFloat(txt.replace(/[^0-9,.]/gi, ''));
+        var raw = txt.replace(/[^0-9,.]/gi, '');
+        var value = parseFloat(raw);
         if (isNaN(value)) return 'NULL';
-        return value * 1000;
+        if (raw.indexOf('.') !== -1 && (raw.length - raw.indexOf('.')) > 3) return value * 1000;
+        return value;
     }
 
     const isPositive = (txt) => {
@@ -186,7 +198,7 @@ const async = async () => {
                 || !!lineRows['PB']
                 || !!lineRows['ACAOOR'];
 
-            if (!hasCustomer && !hasAction && !hasFinance)
+            if (!hasCustomer && !hasFinance && !hasAccompaniment && !hasTask && !hasDocument && !hasAction)
                 continue;
 
             if (hasCustomer) {
@@ -230,7 +242,7 @@ OBSERVACOES: ${lineRows['OBSERVACOES'] || '[vazio]'}`,
                     Config.idUser,
                     Config.idUser,
                     undefined,
-                    undefined,
+                    getPriority(lineRows['PRIORIDADE']),
                     getDate(lineRows['DATASITBAIXADO']) ? 'vrfenn0n' : 'vrfenn0f',
                     getList(lineRows['LISTA']),
                     Config.idUser,
@@ -308,6 +320,9 @@ OBSERVACOES: ${lineRows['OBSERVACOES'] || '[vazio]'}`,
                     categories.push(category);
                     lastImport.categories.push(category);
                 }
+
+                // console.log(lineRows['CLIENTES_PAGAMENTOS::VALOR']);
+                console.log(getNumber(lineRows['CLIENTES_PAGAMENTOS::VALOR']));
 
                 const finance = {
                     id: NewId(),
