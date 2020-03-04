@@ -321,9 +321,6 @@ OBSERVACOES: ${lineRows['OBSERVACOES'] || '[vazio]'}`,
                     lastImport.categories.push(category);
                 }
 
-                // console.log(lineRows['CLIENTES_PAGAMENTOS::VALOR']);
-                console.log(getNumber(lineRows['CLIENTES_PAGAMENTOS::VALOR']));
-
                 const finance = {
                     id: NewId(),
                     date: getDate(lineRows['CLIENTES_PAGAMENTOS::DATA']),
