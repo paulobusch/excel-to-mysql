@@ -432,6 +432,7 @@ OBSERVACOES: ${lineRows['OBSERVACOES'] || '[vazio]'}`,
                 );
                 if (customerExisting) {
                     address.id = customerExisting.id_address;
+                    dirf.id = customerExisting.dirf_id;
                     customer.id_address = customerExisting.id_address;
                     customer.id = customerExisting.id;
                     progress.id_customer = customerExisting.id;
