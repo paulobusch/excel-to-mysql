@@ -149,10 +149,9 @@ const async = async () => {
 
     const getNumber = (txt) => {
         if (!txt) return null;
-        var raw = txt.replace(/[^0-9,.]/gi, '');
+        var raw = txt.replace(/[^0-9,.-]/gi, '');
         var value = parseFloat(raw);
         if (isNaN(value)) return 'NULL';
-        if (raw.indexOf('.') !== -1 && (raw.length - raw.indexOf('.')) > 3) return value * 1000;
         return value;
     }
 
@@ -321,12 +320,16 @@ OBSERVACOES: ${lineRows['OBSERVACOES'] || '[vazio]'}`,
                     lastImport.categories.push(category);
                 }
 
+                const value = getNumber(lineRows['CLIENTES_PAGAMENTOS::VALOR']);
+                let isPositive = value > 0 ? true : false;
+                if (value == 0.0)
+                    isPositive = isPositive(lineRows['CLIENTES_PAGAMENTOS::CATEGORIA2']);
                 const finance = {
                     id: NewId(),
                     date: getDate(lineRows['CLIENTES_PAGAMENTOS::DATA']),
-                    value: getNumber(lineRows['CLIENTES_PAGAMENTOS::VALOR']),
+                    value: value,
                     description: lineRows['CLIENTES_PAGAMENTOS::DESCRICAO'],
-                    is_positive: isPositive(lineRows['CLIENTES_PAGAMENTOS::CATEGORIA2']),
+                    is_positive: isPositive,
                     id_category: getCategory(lineRows['CLIENTES_PAGAMENTOS::CATEGORIA']),
                     id_customer: lastImport.customer.id,
                     id_create_user: getUser(lineRows['CLIENTES_PAGAMENTOS::USUARIO_CRIACAO']) || Config.idUser,
