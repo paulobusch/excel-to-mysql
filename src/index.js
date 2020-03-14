@@ -72,9 +72,10 @@ const async = async () => {
 
     const queryLists = "select id, upper(name) as name from customer_lists where removed=0";
     const lists = await connection.query(queryLists);
+    _.forEach(lists, c => c.name = _.deburr(c.name));
     const getList = (listStr) => {
         if (!listStr) return null;
-        const listName = listStr.toUpperCase();
+        const listName = _.deburr(listStr.toUpperCase());
         const list = lists.find(l => l.name === listName);
         if (!list) return null;
         return list.id;
