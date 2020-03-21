@@ -605,17 +605,17 @@ OBSERVACOES: ${lineRows['OBSERVACOES'] || '[vazio]'}`,
                 }
             }
 
-            // await connection.query(Query.get('address', Columns.address, addressRows));
+            await connection.query(Query.get('address', Columns.address, addressRows));
             await connection.query(Query.get('customers', Columns.customer, customerRows));
-            // await connection.query(Query.get('customers_progress', Columns.progress, ProgressRows));
-            // await connection.query(Query.get('customers_dirf', Columns.dirf, DirfRows));
-            // await connection.query(Query.get('actions', Columns.action, ActionRows));
-            // await connection.query(Query.get('finances_categories', Columns.categories, CategoryRows));
-            // await connection.query(Query.get('accompaniments', Columns.accompaniment, AccompanimentRows));
-            // await connection.query(Query.get('tasks', Columns.task, TaskRows));
-            // await connection.query(Query.get('documents', Columns.document, DocumentRows));
-            // await connection.query(Query.get('customer_histories', Columns.history, HistoryRows));
-            // await connection.query(Query.get('finances', Columns.finance, FinanceRows));
+            await connection.query(Query.get('customers_progress', Columns.progress, ProgressRows));
+            await connection.query(Query.get('customers_dirf', Columns.dirf, DirfRows));
+            await connection.query(Query.get('actions', Columns.action, ActionRows));
+            await connection.query(Query.get('finances_categories', Columns.categories, CategoryRows));
+            await connection.query(Query.get('accompaniments', Columns.accompaniment, AccompanimentRows));
+            await connection.query(Query.get('tasks', Columns.task, TaskRows));
+            await connection.query(Query.get('documents', Columns.document, DocumentRows));
+            await connection.query(Query.get('customer_histories', Columns.history, HistoryRows));
+            await connection.query(Query.get('finances', Columns.finance, FinanceRows));
 
             partial++;
         }
