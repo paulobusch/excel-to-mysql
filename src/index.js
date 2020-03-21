@@ -32,14 +32,14 @@ const async = async () => {
         return user.id;
     };
 
-    const queryCompanies = "select id, upper(name) as name from companies";
-    const companies = await connection.query(queryCompanies);
-    const getCompany = (companyStr) => {
-        if (!companyStr) return null;
-        const comapanyName = companyStr.toUpperCase();
-        const company = companies.find(c => c.name === comapanyName);
-        if (!company) return null;
-        return company.id;
+    const queryDirfCodes = "select id, upper(name) as name from dirf_codes";
+    const dirfCodes = await connection.query(queryDirfCodes);
+    const getDirfCode = (dirfCodeStr) => {
+        if (!dirfCodeStr) return null;
+        const codeName = dirfCodeStr.toUpperCase();
+        const code = dirfCodes.find(c => c.name === codeName);
+        if (!code) return null;
+        return code.id;
     };
 
     const getStatusTask = (statusStr) => {
@@ -297,7 +297,7 @@ OBSERVACOES: ${lineRows['OBSERVACOES'] || '[vazio]'}`,
                     id: NewId(),
                     quantity: 1,
                     dividends: 0,
-                    id_company: getCompany('Zerado'),
+                    id_code_dirf: getDirfCode('Zerado'),
                     eo: getFloat(lineRows['EO']),
                     ep: getFloat(lineRows['EP']),
                     on: getFloat(lineRows['ON']),
@@ -516,7 +516,7 @@ OBSERVACOES: ${lineRows['OBSERVACOES'] || '[vazio]'}`,
                         action.id,
                         action.quantity,
                         action.dividends,
-                        action.id_company,
+                        action.id_code_dirf,
                         customer.id,
                         action.eo,
                         action.ep,
@@ -605,17 +605,17 @@ OBSERVACOES: ${lineRows['OBSERVACOES'] || '[vazio]'}`,
                 }
             }
 
-            await connection.query(Query.get('address', Columns.address, addressRows));
+            // await connection.query(Query.get('address', Columns.address, addressRows));
             await connection.query(Query.get('customers', Columns.customer, customerRows));
-            await connection.query(Query.get('customers_progress', Columns.progress, ProgressRows));
-            await connection.query(Query.get('customers_dirf', Columns.dirf, DirfRows));
-            await connection.query(Query.get('actions', Columns.action, ActionRows));
-            await connection.query(Query.get('finances_categories', Columns.categories, CategoryRows));
-            await connection.query(Query.get('accompaniments', Columns.accompaniment, AccompanimentRows));
-            await connection.query(Query.get('tasks', Columns.task, TaskRows));
+            // await connection.query(Query.get('customers_progress', Columns.progress, ProgressRows));
+            // await connection.query(Query.get('customers_dirf', Columns.dirf, DirfRows));
+            // await connection.query(Query.get('actions', Columns.action, ActionRows));
+            // await connection.query(Query.get('finances_categories', Columns.categories, CategoryRows));
+            // await connection.query(Query.get('accompaniments', Columns.accompaniment, AccompanimentRows));
+            // await connection.query(Query.get('tasks', Columns.task, TaskRows));
             // await connection.query(Query.get('documents', Columns.document, DocumentRows));
-            await connection.query(Query.get('customer_histories', Columns.history, HistoryRows));
-            await connection.query(Query.get('finances', Columns.finance, FinanceRows));
+            // await connection.query(Query.get('customer_histories', Columns.history, HistoryRows));
+            // await connection.query(Query.get('finances', Columns.finance, FinanceRows));
 
             partial++;
         }
