@@ -4,10 +4,10 @@ module.exports = {
         limit: 500,
     },
     MySqlConfig: {
-        host: 'vcsystem.com.br',
-        user: 'wwvcsy_root',
-        password: '@GGf01022000',
-        database: 'wwvcsy_vetorial'
+        host: 'locahost',
+        user: 'root',
+        password: 'root',
+        database: 'vetorial'
     },
     ExcelConfig: {
         path: 'data'
