@@ -235,6 +235,7 @@ const async = async () => {
                     true,
                     `
 DIRF: ${lineRows['DIRF'] || '[vazio]'}
+GOOGLE: ${lineRows['GOOGLE'] || '[vazio]'}
 VALOR POUP OU DJ: ${lineRows['VALOR.POUP.OU.DJ'] || '[vazio]'}
 OBSERVACOES: ${lineRows['OBSERVACOES'] || '[vazio]'}`,
                     new Date(),
@@ -345,6 +346,7 @@ OBSERVACOES: ${lineRows['OBSERVACOES'] || '[vazio]'}`,
                 const accompaniment = {
                     id: NewId(),
                     date: getDate(lineRows['CLIENTES_ACOMPANHAMENTOS::DATA']),
+                    title: lineRows['CLIENTES_ACOMPANHAMENTOS::ENVOLVIDO'],
                     description: lineRows['CLIENTES_ACOMPANHAMENTOS::DESCRICAO'],
                     id_customer: lastImport.customer.id,
                     id_create_user: getUser(lineRows['CLIENTES_ACOMPANHAMENTOS::USUARIO_CRIACAO']) || Config.idUser,
@@ -576,8 +578,8 @@ OBSERVACOES: ${lineRows['OBSERVACOES'] || '[vazio]'}`,
                     AccompanimentRows.push([
                         accompaniment.id,
                         accompaniment.date,
-                        accompaniment.description
-                            ? accompaniment.description.slice(0, 15) + '...'
+                        accompaniment.title
+                            ? accompaniment.title.slice(0, 45) + '...'
                             : '[Título]',
                         accompaniment.description ? accompaniment.description : '[Importado]',
                         customer.id,
