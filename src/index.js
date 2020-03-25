@@ -231,7 +231,7 @@ const async = async () => {
                     lineRows['SITUACAOCPF'],
                     undefined,
                     undefined,
-                    getDate(lineRows['DATASITBAIXADO']) ? lineRows['DIRF'] || 'vazio' : undefined,
+                    getDate(lineRows['DATASITBAIXADO']) ? lineRows['SITUACAO'] || 'vazio' : undefined,
                     true,
                     `
 DIRF: ${lineRows['DIRF'] || '[vazio]'}

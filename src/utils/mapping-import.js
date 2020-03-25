@@ -19,6 +19,7 @@ module.exports = {
         'NASC',
         'LISTA',
         'GOOGLE',
+        'SITUACAO',
         'SITUACAOCPF',
         'LOGRADOURO',
         'NUMERO',
