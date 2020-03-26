@@ -113,7 +113,8 @@ const async = async () => {
 
     const formatDate = (date) => {
         if (!date) return 'NULL';
-        return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate() + 2}`;
+        const month = (date.getMonth() + 1).toString();
+        return `${date.getFullYear()}-${month.length === 1 ? '0' + month : month}-${date.getDate() + 1}`;
     }
 
     const getDate = (date) => {
@@ -615,7 +616,7 @@ OBSERVACOES: ${lineRows['OBSERVACOES'] || '[vazio]'}`,
             await connection.query(Query.get('finances_categories', Columns.categories, CategoryRows));
             await connection.query(Query.get('accompaniments', Columns.accompaniment, AccompanimentRows));
             await connection.query(Query.get('tasks', Columns.task, TaskRows));
-            await connection.query(Query.get('documents', Columns.document, DocumentRows));
+            // await connection.query(Query.get('documents', Columns.document, DocumentRows));
             await connection.query(Query.get('customer_histories', Columns.history, HistoryRows));
             await connection.query(Query.get('finances', Columns.finance, FinanceRows));
 
