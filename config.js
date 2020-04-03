@@ -19,7 +19,7 @@ module.exports = {
         dirf: [`id`, `id_customer`, 'solicitation_date', 'receive_date', 'comment', 'id_status'],
         history: [`id`, `id_type`, `id_customer`, `id_creation_user`],
         action: ['id', 'quantity', 'dividends', 'id_code_dirf', 'id_customer', 'eo', 'ep', 'on', 'pn', 'pa', 'pb', 'or', 'id_create_user', 'id_update_user', 'action_created', 'action_updated'],
-        task: [`id`, `date`, `description`, `id_status`, `id_customer`, `id_create_user`, `task_created`, `task_updated`],
+        task: [`id`, `date`, 'deadline_date', `description`, `id_status`, `id_customer`, `id_create_user`, `task_created`, `task_updated`],
         accompaniment: [`id`, `date`, `title`, `description`, `id_customer`, `id_create_user`, `id_update_user`, `accompaniment_created`, `accompaniment_updated`],
         finance: ['id', 'date', 'value', 'description', 'is_positive', 'id_category', 'id_customer', 'id_create_user', 'id_update_user', 'finance_created', 'finance_updated'],
         document: ['id', 'name', 'extension', 'size', 'description', 'id_customer', 'id_create_user', 'id_update_user', 'document_created', 'document_updated'],

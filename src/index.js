@@ -359,9 +359,12 @@ OBSERVACOES: ${lineRows['OBSERVACOES'] || '[vazio]'}`,
             }
 
             if (hasTask) {
+                const date = getDate(lineRows['CLIENTES_TAREFAS::DATA']);
+                const date_coalesce = date || new Date();
                 const task = {
                     id: NewId(),
-                    date: getDate(lineRows['CLIENTES_TAREFAS::DATA']),
+                    date: date,
+                    deadline_date: new Date(date_coalesce.setMonth(date_coalesce.getMonth() + 1)),
                     description: lineRows['CLIENTES_TAREFAS::DESCRICAO'],
                     status: getStatusTask(lineRows['CLIENTES_TAREFAS::STATUS']),
                     id_customer: lastImport.customer.id,
@@ -540,6 +543,7 @@ OBSERVACOES: ${lineRows['OBSERVACOES'] || '[vazio]'}`,
                     TaskRows.push([
                         task.id,
                         task.date,
+                        task.deadline_date,
                         task.description ? task.description : '[Importado]',
                         task.status,
                         customer.id,
