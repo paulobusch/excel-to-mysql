@@ -360,7 +360,7 @@ OBSERVACOES: ${lineRows['OBSERVACOES'] || '[vazio]'}`,
 
             if (hasTask) {
                 const date = getDate(lineRows['CLIENTES_TAREFAS::DATA']);
-                const date_coalesce = date || new Date();
+                const date_coalesce = !date || !date.setMonth ? new Date() : date;
                 const task = {
                     id: NewId(),
                     date: date,
