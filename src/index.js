@@ -13,7 +13,6 @@ const fs = require('fs');
 const _ = require('lodash');
 
 const async = async () => {
-    console.log(process.env.DB_HOST);
     console.log('Iniciando...');
     const connection = new mysql({
         host: process.env.DB_HOST,
