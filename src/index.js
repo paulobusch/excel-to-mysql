@@ -1,18 +1,27 @@
+const dotenv = require('dotenv');
+dotenv.config({ path: '.env' });
+
 const { Customer } = require('./models/customer');
 const { Config, Columns, ExcelConfig } = require('../config');
 const { Customers } = require('./utils/mapping-import');
 const { Query } = require('./utils/query');
 const { NewId } = require('./utils/random');
 const { Excel } = require('./utils/excel');
-const { MySqlConfig } = require('../config');
 
 const mysql = require('sync-mysql');
 const fs = require('fs');
 const _ = require('lodash');
 
 const async = async () => {
+    console.log(process.env.DB_HOST);
     console.log('Iniciando...');
-    const connection = new mysql(MySqlConfig);
+    const connection = new mysql({
+        host: process.env.DB_HOST,
+        port: process.env.DB_PORT,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASS,
+        database: process.env.DB_NAME
+    });
     const queryUsers = "select id, upper(name) as name from users where removed=0";
     const users = await connection.query(queryUsers);
     const getUser = (userStr) => {

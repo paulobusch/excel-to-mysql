@@ -3,12 +3,6 @@ module.exports = {
         idUser: 'oiyhjkmn',
         limit: 500,
     },
-    MySqlConfig: {
-        host: 'locahost',
-        user: 'root',
-        password: 'root',
-        database: 'vetorial'
-    },
     ExcelConfig: {
         path: 'data'
     },
