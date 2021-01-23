@@ -1,6 +1,6 @@
 module.exports = {
     Customers: [
         'NOME',
-        'CPF_CNPJ'
+        'CNPJ.CPF'
     ]
 }

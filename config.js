@@ -1,7 +1,7 @@
 module.exports = {
     Config: {
         idUser: 'oiyhjkmn',
-        limit: 500,
+        limit: 100,
     },
     ExcelConfig: {
         path: 'data'

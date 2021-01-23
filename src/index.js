@@ -57,20 +57,18 @@ const async = async () => {
         const listId = getList(file.substr(0, file.indexOf('.')));
         for (var r = 2; r <= data.worksheet.rowCount; r++) {
             const lineRows = Excel.readLine(data.worksheet, data.columns, r);
-            const hasCustomer = !!lineRows['NOME'] || !!lineRows['CPF_CNPJ'];
+            const hasCustomer = !!lineRows['NOME'] || !!lineRows['CNPJ.CPF'];
             if (!hasCustomer) continue;
 
-            const cpf_cnpj = lineRows['CPF_CNPJ'] || '';
+            const cpf_cnpj = lineRows['CNPJ.CPF'] || '';
             const customer = {
               name: getText(lineRows['NOME']),
               cpf: cpf_cnpj.length === 11 ? cpf_cnpj : null,
-              cnpj: cpf_cnpj.length === 14 ? cpf_cnpj : null,
-              id_list: listId
+              cnpj: cpf_cnpj.length === 14 ? cpf_cnpj : null
             };
 
             customers.push(customer);
         }
-
 
         let partial = 0;
         let countNotFound = 0;
@@ -81,11 +79,11 @@ const async = async () => {
             const partialCustomers = customers.slice(offset, offset + Config.limit);
 
             const customerConditions = partialCustomers.map(c => 
-              `(
-                  c.cpf ${c.cpf ? `'${c.cpf}'` : 'is null'} 
-                  and c.cnpj ${c.cnpj ? `'${c.cnpj}'` : 'is null'}
-                  and c.name like ${c.name}
-              )`
+              "("+
+                  `c.cpf${c.cpf ? `='${c.cpf}'` : ' is null'} ` +
+                  `and c.cnpj${c.cnpj ? `='${c.cnpj}'` : ' is null'} ` +
+                  `and c.name like '${c.name}'` +
+              ")"
             );
             const queryCustomers = "" +
                 "select c.id, c.name, c.cpf, c.cnpj from customers c " +
@@ -107,12 +105,11 @@ const async = async () => {
                 }
 
                 countFounded++;
-                const command = `
-                  update customers c set
-                    id_list='${id_list}',
-                    customer_updated='${timeUpdate}'
-                  where c.id_list is null and id='${customerFinded.id}'
-                `;
+                const command = "" +
+                  "update customers c set " +
+                    `c.id_list='${listId}', ` +
+                    `c.customer_updated='${timeUpdate}' ` +
+                  `where c.id_list is null and c.id='${customerFinded.id}'`;
                 commands.push(command);
             }
 
